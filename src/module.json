@@ -13,7 +13,7 @@
   "manifestPlusVersion": "1.0.0",
   "url": "https://github.com/JakeOrona/foundry-VTT",
   "manifest": "https://raw.githubusercontent.com/JakeOrona/foundry-VTT/main/dist/module.json",
-  "download": "https://github.com/JakeOrona/foundry-VTT/releases/tag/v1.zip",
+  "download": "https://github.com/JakeOrona/foundry-VTT/releases/download/v1/traps_v1.zip",
   "type": "module",
   "includes": [
     "./assets/**",
