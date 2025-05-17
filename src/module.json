@@ -1,5 +1,5 @@
 {
-  "name": "trap-macros",
+  "id": "jakes-trap-macros",
   "title": "Trap Macros for Foundry VTT",
   "description": "A module for creating and managing trap macros in Foundry VTT with automated triggers, effects, and damage handling.", 
   "authors": [
