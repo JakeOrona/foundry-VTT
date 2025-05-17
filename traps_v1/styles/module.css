@@ -1,0 +1,18 @@
+/* src/styles/module.css */
+/* CSS styles for the trap macros module */
+
+.ice-pit-message {
+    background-color: #e0f0ff;
+    border: 1px solid #8080ff;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 5px;
+}
+
+.pressure-dart-message {
+    background-color: #f0ffe0;
+    border: 1px solid #80ff80;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 5px;
+}
