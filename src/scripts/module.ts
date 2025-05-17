@@ -4,25 +4,13 @@ import { createIcePitTrap } from './traps/ice-pit';
 import { createPressureDartTrap } from './traps/pressure-dart';
 import { registerSettings } from './settings';
 import { log } from './utils/logger';
+import './game-types'; // Import the game types
 
 // Module ID
 const MODULE_ID = 'trap-macros';
 
 // Create trap manager instance
 let trapManager: TrapManager;
-
-// Module API
-declare global {
-    interface Game {
-        trapMacros: {
-            api: {
-                trapManager: TrapManager;
-                createIcePitTrap: typeof createIcePitTrap;
-                createPressureDartTrap: typeof createPressureDartTrap;
-            }
-        }
-    }
-}
 
 /**
  * Initialize the module
@@ -34,10 +22,10 @@ Hooks.once('init', () => {
     registerSettings();
     
     // Register API for external access
-    game.trapMacros = {
+    (game as any).trapMacros = {
         api: {
             // These will be properly initialized in the ready hook
-            trapManager: null as unknown as TrapManager,
+            trapManager: null,
             createIcePitTrap,
             createPressureDartTrap
         }
@@ -54,7 +42,7 @@ Hooks.once('ready', () => {
     trapManager = new TrapManager();
     
     // Update API
-    game.trapMacros.api.trapManager = trapManager;
+    (game as any).trapMacros.api.trapManager = trapManager;
     
     // Register token controls
     registerTrapControls();
@@ -64,8 +52,8 @@ Hooks.once('ready', () => {
  * Register trap controls in the token toolbar
  */
 function registerTrapControls() {
-    Hooks.on('getSceneControlButtons', (controls: SceneControl[]) => {
-        if (!game.user?.isGM) return;
+    Hooks.on('getSceneControlButtons', (controls: any[]) => {
+        if (!(game.user as any)?.isGM) return;
         
         // Find the token controls
         const tokenControls = controls.find(c => c.name === 'token');
@@ -87,7 +75,7 @@ function registerTrapControls() {
  * Show the dialog for placing a trap
  */
 function showPlaceTrapDialog() {
-    new Dialog({
+    new (Dialog as any)({
         title: 'Place Trap',
         content: `
             <form>
@@ -123,11 +111,11 @@ function showPlaceTrapDialog() {
                     const damage = html.find('[name="damage"]').val()?.toString() || '2d6';
                     
                     // Use canvas interaction to place the trap
-                    const placeTrap = async (event: PIXI.InteractionEvent) => {
-                        if (!canvas.grid) return;
+                    const placeTrap = async (event: any) => {
+                        if (!(canvas as any).grid) return;
                         
                         // Get position from event
-                        const position = canvas.grid.getSnappedPosition(event.data.origin.x, event.data.origin.y);
+                        const position = (canvas as any).grid.getSnappedPosition(event.data.origin.x, event.data.origin.y);
                         
                         // Create trap config based on type
                         let trap;
@@ -146,10 +134,10 @@ function showPlaceTrapDialog() {
                         }
                         
                         // Register the trap
-                        game.trapMacros.api.trapManager.registerTrap(trap);
+                        (game as any).trapMacros.api.trapManager.registerTrap(trap);
                         
                         // Create the token
-                        await canvas.scene?.createEmbeddedDocuments('Token', [{
+                        await (canvas as any).scene?.createEmbeddedDocuments('Token', [{
                             name: trap.id,
                             x: position.x,
                             y: position.y,
@@ -162,41 +150,41 @@ function showPlaceTrapDialog() {
                                     trapId: trap.id
                                 }
                             }
-                        } as any]);
+                        }]);
                         
                         // Deactivate the listener
-                        canvas.app.renderer.plugins.interaction.off('pointerdown', placeTrap);
-                        canvas.stage.off('mousemove', preview);
+                        (canvas as any).app.renderer.plugins.interaction.off('pointerdown', placeTrap);
+                        (canvas as any).stage.off('mousemove', preview);
                         
                         // Remove preview
                         if (trapPreview && trapPreview.parent) {
                             trapPreview.parent.removeChild(trapPreview);
                         }
                         
-                        ui.notifications?.info(`${trapName} trap placed!`);
+                        (ui as any).notifications?.info(`${trapName} trap placed!`);
                     };
                     
                     // Preview function for showing trap position
-                    let trapPreview: PIXI.Sprite | null = null;
-                    const preview = (event: PIXI.InteractionEvent) => {
+                    let trapPreview: any = null;
+                    const preview = (event: any) => {
                         if (!trapPreview) {
-                            trapPreview = new PIXI.Sprite(PIXI.Texture.from(
+                            trapPreview = new (PIXI as any).Sprite((PIXI as any).Texture.from(
                                 trapType === 'ice-pit' ? 'icons/svg/ice-aura.svg' : 'icons/svg/trap.svg'
                             ));
-                            trapPreview.width = trapPreview.height = canvas.grid?.size || 50;
+                            trapPreview.width = trapPreview.height = (canvas as any).grid?.size || 50;
                             trapPreview.alpha = 0.5;
-                            canvas.stage.addChild(trapPreview);
+                            (canvas as any).stage.addChild(trapPreview);
                         }
                         
-                        if (canvas.grid) {
-                            const pos = canvas.grid.getSnappedPosition(event.data.global.x, event.data.global.y);
+                        if ((canvas as any).grid) {
+                            const pos = (canvas as any).grid.getSnappedPosition(event.data.global.x, event.data.global.y);
                             trapPreview.position.set(pos.x, pos.y);
                         }
                     };
                     
                     // Activate the listener
-                    canvas.app.renderer.plugins.interaction.once('pointerdown', placeTrap);
-                    canvas.stage.on('mousemove', preview);
+                    (canvas as any).app.renderer.plugins.interaction.once('pointerdown', placeTrap);
+                    (canvas as any).stage.on('mousemove', preview);
                 }
             },
             cancel: {

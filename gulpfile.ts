@@ -5,8 +5,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Get the module name from the package.json
-const package = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
-const moduleId = package.name;
+const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+const moduleId = pkg.name;
 
 // Get Foundry data path from command line arg
 let foundryDataPath = process.env.FOUNDRY_DATA_PATH;
@@ -36,7 +36,7 @@ gulp.task('compile', () => {
 
 // Copy other files
 gulp.task('copy', async () => {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         gulp.src('README.md').pipe(gulp.dest("dist/"));
         gulp.src("src/module.json").pipe(gulp.dest('dist/'));
         gulp.src("src/lang/**").pipe(gulp.dest('dist/lang/'));
